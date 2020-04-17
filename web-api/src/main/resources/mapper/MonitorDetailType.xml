@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wejoyclass.itops.local.mapper.MonitorDetailTypeMapper">
+
+    <resultMap id="monitorDetailType" type="com.wejoyclass.itops.local.entity.MonitorDetailType">
+        <id property="id" column="id"></id>
+    </resultMap>
+
+    <resultMap id="monitorDetailTypeDto" type="com.wejoyclass.itops.local.dto.MonitorDetailTypeDto">
+        <id property="id" column="id"></id>
+        <collection property="monitorParam"
+                    select="com.wejoyclass.itops.local.mapper.MonitorParamMapper.getMonitorParamDtoById" column="id"/>
+    </resultMap>
+
+    <select id="getById" resultMap="monitorDetailType">
+        select *
+        from t_ops_monitor_detail_type
+        where DELETE_FLAG = 0
+        and id = #{id}
+    </select>
+
+    <select id="getMonitorDetailTypeDtoById" resultMap="monitorDetailTypeDto">
+        select ID,MONITOR_TYPE_ID,MONITOR_TYPE_SUB_ID,MONITOR_SUB_METHOD_ID
+        from t_ops_monitor_detail_type
+        where DELETE_FLAG = 0
+        and MONITOR_ID = #{id}
+    </select>
+
+    <insert id="saveMonitorDetailType" useGeneratedKeys="true" keyColumn="ID" keyProperty="id">
+        insert into t_ops_monitor_detail_type
+        (ORG_ID, MONITOR_ID, MONITOR_TYPE_ID, MONITOR_TYPE_SUB_ID, MONITOR_SUB_METHOD_ID,
+        <if test="brand != null and brand != ''">
+            BRAND,
+        </if>
+        <if test="equipmentMode != null and equipmentMode != ''">
+            EQUIPMENT_MODE,
+        </if>
+        TEMPLATE_NAME,TEMPLATE_ID, SORT_NUM, CREATE_TIME, CREATE_USER_NAME, CREATE_USER)
+        values (
+        #{orgId},
+        #{monitorId},
+        #{monitorTypeId},
+        #{monitorTypeSubId},
+        #{monitorSubMethodId},
+        <if test="brand != null and brand != ''">
+            #{brand},
+        </if>
+        <if test="equipmentMode != null and equipmentMode != ''">
+            #{equipmentMode},
+        </if>
+        #{templateName},
+        #{templateId},
+        #{sortNum},
+        #{createTime},
+        #{createUsername},
+        #{createUser}
+        )
+    </insert>
+
+    <select id="getIdListByMonitorId" resultType="Long">
+        select ID
+        from t_ops_monitor_detail_type
+        where DELETE_FLAG = 0
+        and MONITOR_ID = #{id}
+    </select>
+
+    <select id="getTemplateIdListByMonitorId" resultType="String">
+        select TEMPLATE_ID
+        from t_ops_monitor_detail_type
+        where DELETE_FLAG = 0
+        and MONITOR_ID = #{id}
+    </select>
+
+    <update id="updateMonitorDetailType">
+        update t_ops_monitor_detail_type
+        set
+        DELETE_FLAG = 0
+        <if test="monitorTypeId != null and monitorTypeId != ''">
+            ,MONITOR_TYPE_ID = #{monitorTypeId}
+        </if>
+        <if test="monitorTypeSubId != null and monitorTypeSubId != ''">
+            ,MONITOR_TYPE_SUB_ID = #{monitorTypeSubId}
+        </if>
+        <if test="monitorSubMethodId != null and monitorSubMethodId != ''">
+            ,MONITOR_SUB_METHOD_ID = #{monitorSubMethodId}
+        </if>
+        <if test="brand != null and brand != ''">
+            ,BRAND = #{brand}
+        </if>
+        <if test="equipmentMode != null and equipmentMode != ''">
+            ,EQUIPMENT_MODE = #{equipmentMode}
+        </if>
+        <if test="templateName != null and templateName != ''">
+            ,TEMPLATE_NAME = #{templateName}
+        </if>
+        <if test="sortNum != null and sortNum != ''">
+            ,SORT_NUM = #{sortNum}
+        </if>
+        ,UPDATE_TIME = #{updateTime}
+        ,UPDATE_USER = #{updateUser}
+        ,UPDATE_USER_NAME = #{updateUsername}
+        where id = #{id}
+    </update>
+
+    <update id="deleteById">
+        update t_ops_monitor_detail_type
+        set
+        DELETE_FLAG = ID,
+        DELETE_TIME = now(),
+        DELETE_USER_NAME = #{username},
+        DELETE_USER = #{userId}
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item}
+        </foreach>
+    </update>
+
+    <update id="delelteByMonitorId">
+        update t_ops_monitor_detail_type
+        set DELETE_FLAG = id
+        where
+        MONITOR_ID = #{id}
+    </update>
+</mapper>

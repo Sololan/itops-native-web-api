@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wejoyclass.itops.local.mapper.MonitorShowSettingMapper">
+
+    <resultMap id="monitorShowSetting" type="com.wejoyclass.itops.local.entity.MonitorShowSetting">
+        <id property="id" column="id"/>
+        <collection property="monitorShowDataList"
+                    select="com.wejoyclass.itops.local.mapper.MonitorShowDataMapper.getMonitorShowDateBySettingId"
+                    column="id"/>
+    </resultMap>
+
+    <insert id="saveMonitorShowSetting" useGeneratedKeys="true" keyColumn="ID" keyProperty="id">
+        insert into t_ops_monitor_show_setting
+        (ORG_ID, MONITOR_ID, MONITOR_TYPE_ID, MONITOR_ITEM_NAME, MONITOR_ITEM_TYPE, CHART_TYPE
+        <if test="icon1 != null">
+            ,ICON_1
+        </if>
+        <if test="icon1 != null">
+            ,ICON_2
+        </if>
+        <if test="okValue != null">
+            ,OK_VALUE
+        </if>
+        , SORT_NUM, CREATE_TIME, CREATE_USER_NAME, CREATE_USER)
+        values
+        (#{orgId},#{monitorId},#{monitorTypeId},#{monitorItemName},1,#{chartType}
+        <if test="icon1 != null">
+            ,#{icon1}
+        </if>
+        <if test="icon2 != null">
+            ,#{icon2}
+        </if>
+        <if test="okValue != null">
+            ,#{okValue}
+        </if>
+        ,1,#{createTime},#{createUsername},#{createUser}
+        )
+    </insert>
+
+    <update id="delelteByMonitorId">
+        update t_ops_monitor_show_setting
+        set DELETE_FLAG = id
+        where
+        MONITOR_ID = #{id}
+    </update>
+
+    <select id="getMonitorShowSetting" resultMap="monitorShowSetting">
+        select *
+        from t_ops_monitor_show_setting
+        where DELETE_FLAG = 0
+        and MONITOR_ID = #{id}
+        and MONITOR_TYPE_ID = #{typeId}
+        and DELETE_FLAG = 0
+        order by CREATE_TIME
+    </select>
+
+    <update id="deleteById">
+        update t_ops_monitor_show_setting
+        set
+        DELETE_FLAG = ID
+        where
+        id = #{id}
+    </update>
+
+    <select id="getMonitorShowSettingById" resultMap="monitorShowSetting">
+        select *
+        from t_ops_monitor_show_setting
+        where DELETE_FLAG = 0
+        and ID = #{id}
+        and DELETE_FLAG = 0
+    </select>
+
+    <update id="updateMonitorId">
+        update t_ops_monitor_show_setting
+        set MONITOR_ID = #{newId}
+        where DELETE_FLAG = 0
+        and MONITOR_ID = #{oldId}
+    </update>
+
+    <update id="updateById">
+        update t_ops_monitor_show_setting
+        set id = id
+        <if test="monitorShowSetting.monitorItemName != null">
+            ,MONITOR_ITEM_NAME = #{monitorShowSetting.monitorItemName}
+        </if>
+        <if test="monitorShowSetting.chartType != null">
+            ,CHART_TYPE = #{monitorShowSetting.chartType}
+        </if>
+        <if test="monitorShowSetting.monitorItemType != null">
+            ,MONITOR_ITEM_TYPE = #{monitorShowSetting.monitorItemType}
+        </if>
+        <if test="monitorShowSetting.okValue != null">
+            ,OK_VALUE = #{monitorShowSetting.okValue}
+        </if>
+        <if test="monitorShowSetting.icon1 != null">
+            ,ICON_1 = #{monitorShowSetting.icon1}
+        </if>
+        <if test="monitorShowSetting.icon2 != null">
+            ,ICON_2 = #{monitorShowSetting.icon2}
+        </if>
+        <if test="monitorShowSetting.okValue != null">
+            ,OK_VALUE = #{monitorShowSetting.okValue}
+        </if>
+        where ID = #{id}
+    </update>
+</mapper>

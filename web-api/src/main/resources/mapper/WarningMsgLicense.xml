@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wejoyclass.itops.local.mapper.WarningMsgLicenseMapper">
+    <resultMap id="dto" type="com.wejoyclass.itops.local.dto.WarningMsgLicenseDto">
+
+    </resultMap>
+
+    <resultMap id="entity" type="com.wejoyclass.itops.local.entity.WarningMsgLicense">
+
+    </resultMap>
+
+    <select id="findWarningMsgList" resultMap="dto">
+        select * from t_ops_warning_msg_license
+        where 1 = 1
+        <if test="startTime != null and startTime != ''">
+            and START_DATE >= STR_TO_DATE(#{startTime} , '%Y-%m-%d')
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and STR_TO_DATE(#{endTime}, '%Y-%m-%d') >= START_DATE
+        </if>
+        <if test="endEndTime != null and endEndTime != ''">
+            and STR_TO_DATE(#{endEndTime}, '%Y-%m-%d') >= END_DATE
+        </if>
+        <if test="endStartTime != null and endStartTime != ''">
+            and END_DATE >= STR_TO_DATE(#{endStartTime}, '%Y-%m-%d')
+        </if>
+        <if test="status != null and status !=''">
+            <if test="status == false">
+                and now() > EXPIRE_TIME
+            </if>
+            <if test="status == true">
+                and EXPIRE_TIME > now()
+            </if>
+        </if>
+        <if test="orgId != null and orgId != ''">
+            and ORG_ID = #{orgId}
+        </if>
+    </select>
+
+    <select id="findActiveEntity" resultMap="entity">
+        select * from itops.t_ops_warning_msg_license where EXPIRE_TIME >= NOW() order by EXPIRE_TIME limit 1
+    </select>
+
+</mapper>

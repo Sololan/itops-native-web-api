@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wejoyclass.itops.local.mapper.SupplierMapper">
+
+    <resultMap id="Supplier" type="com.wejoyclass.itops.local.entity.Supplier">
+    </resultMap>
+
+    <select id="findSupplierList" resultMap="Supplier">
+        select id, org_id, supplier_name, contacts, contact_tel, email
+        ,create_time, create_user_name, create_user
+        from t_ops_supplier
+        where DELETE_FLAG = 0
+        and ORG_ID = #{orgId}
+        <if test="supplierName != null and supplierName != ''">
+            and SUPPLIER_NAME like concat('%', #{supplierName}, '%')
+        </if>
+        <if test="contacts != null and contacts != ''">
+            and CONTACTS like concat('%', #{contacts}, '%')
+        </if>
+        <if test="fromCreateTime != null">
+            and CREATE_TIME >= #{fromCreateTime}
+        </if>
+        <if test="toCreateTime != null">
+            and #{toCreateTime} >= CREATE_TIME
+        </if>
+        order by SUPPLIER_NAME
+    </select>
+
+    <select id="canDelete" resultType="Integer">
+        select count(*) from t_ops_supplier s
+        left join t_ops_equipment e on SUPPLIER_ID = s.ID
+        where e.DELETE_FLAG = 0
+        and s.DELETE_FLAG = 0
+        and s.id = #{id}
+    </select>
+
+</mapper>

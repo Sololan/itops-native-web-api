@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wejoyclass.itops.local.mapper.MonitorMapper">
+
+    <resultMap id="monitor" type="com.wejoyclass.itops.local.entity.Monitor">
+    </resultMap>
+
+    <resultMap id="monitorTypeMaster" type="com.wejoyclass.itops.local.entity.MonitorTypeMaster">
+    </resultMap>
+
+    <resultMap id="monitorDetailSettingPageDto" type="com.wejoyclass.itops.local.dto.MonitorDetailSettingPageDto">
+    </resultMap>
+
+    <resultMap id="monitorDetailDto" type="com.wejoyclass.itops.local.dto.MonitorDetailDto">
+        <id property="id" column="id"></id>
+        <collection property="monitorDetailType"
+                    select="com.wejoyclass.itops.local.mapper.MonitorDetailTypeMapper.getMonitorDetailTypeDtoById"
+                    column="id"/>
+    </resultMap>
+
+    <select id="findMonitorList" resultMap="monitor">
+        select m.ID,MONITOR_NAME,BUSINESS_SYSTEM,IP_ADDRESS1,IP_ADDRESS2,IS_VALID,di.NAME as EQUIPMENT_TYPE,
+        (
+        select NAME from t_base_dict_item di where di.ID = BUSINESS_SYSTEM
+        ) as BUSINESS_SYSTEM_NAME
+        from t_ops_monitor m,t_ops_equipment e,t_base_dict_item di
+        where m.DELETE_FLAG = 0
+        and m.EQUIPMENT_ID = e.ID
+        and e.EQUIPMENT_TYPE = di.ID
+        <if test="monitorName != null and monitorName != ''">
+            and MONITOR_NAME like concat('%', #{monitorName}, '%')
+        </if>
+        <if test="monitorUse != null">
+            and BUSINESS_SYSTEM = #{monitorUse}
+        </if>
+        <if test="monitorType != null">
+            and di.ID = #{monitorType}
+        </if>
+        <if test="isValid != null">
+            and IS_VALID = #{isValid}
+        </if>
+        order by m.IS_VALID,e.CREATE_TIME,m.CREATE_TIME DESC
+    </select>
+
+    <select id="getMonitorDetailById" resultMap="monitorDetailDto">
+        select m.ID,MONITOR_NAME,BUSINESS_SYSTEM,EQUIPMENT_ID,IS_VALID ,e.BRAND,EQUIPMENT_CODE
+        from t_ops_monitor m inner join t_ops_equipment e on m.EQUIPMENT_ID = e.ID
+        where m.DELETE_FLAG = 0
+        and m.id = #{id}
+    </select>
+
+    <select id="getMonitorDetailSettingPageById" resultMap="monitorDetailSettingPageDto">
+        select m.ID,m.EQUIPMENT_ID,m.IS_VALID,m.MONITOR_NAME
+        ,e.EQUIPMENT_MODE,e.EQUIPMENT_CODE,SERVICE_NUMBER,PURCHASE_DATE
+        ,EXPIRATION,m.HOSTID,
+        (select NAME from t_base_dict_item di where di.ID = BUSINESS_SYSTEM) as BUSINESS_SYSTEM_NAME,
+        (select NAME from t_base_dict_item di where di.ID = EQUIPMENT_TYPE) as EQUIPMENT_TYPE_NAME,
+        (select NAME from t_base_dict_item di where di.ID = EQUIPMENT_SUB_TYPE) as EQUIPMENT_SUB_TYPE_NAME,
+        (select NAME from t_base_dict_item di where di.ID = SUPPLIER_ID) as SUPPLIER_NAME,
+        (select NAME from t_base_dict_item di where di.ID = BRAND) as BRAND_NAME
+        from t_ops_monitor m inner join t_ops_equipment e on m.EQUIPMENT_ID = e.ID
+        where m.DELETE_FLAG = 0
+        and m.id = #{id}
+    </select>
+
+    <insert id="saveMonitor" useGeneratedKeys="true" keyColumn="ID" keyProperty="id">
+        insert into t_ops_monitor
+        (org_id, monitor_name, business_system, equipment_id, is_valid, create_time, create_user_name, create_user)
+        values
+        (#{orgId},#{monitorName},#{businessSystem},#{equipmentId},#{isValid},#{createTime},#{createUsername},#{createUser})
+    </insert>
+
+    <update id="updateMonitor">
+        update t_ops_monitor
+        set
+        DELETE_FLAG = 0
+        <if test="orgId != null and orgId != ''">
+            ,ORG_ID = #{orgId}
+        </if>
+        <if test="monitorName != null and monitorName != ''">
+            ,MONITOR_NAME = #{monitorName}
+        </if>
+        <if test="businessSystem != null and businessSystem != ''">
+            ,BUSINESS_SYSTEM = #{businessSystem}
+        </if>
+        <if test="equipmentId != null and equipmentId != ''">
+            ,EQUIPMENT_ID = #{equipmentId}
+        </if>
+        <if test="isValid != null">
+            ,IS_VALID = #{isValid}
+        </if>
+        <if test="ipAddress1 != null">
+            ,IP_ADDRESS1 = #{ipAddress1}
+        </if>
+        <if test="hostid != null">
+            ,HOSTID = #{hostid}
+        </if>
+        <if test="updateTime != null">
+            ,UPDATE_TIME = #{updateTime}
+        </if>
+        <if test="updateUser != null">
+            ,UPDATE_USER = #{updateUser}
+        </if>
+        <if test="updateUsername != null">
+            ,UPDATE_USER_NAME = #{updateUsername}
+        </if>
+        where id = #{id}
+    </update>
+
+    <update id="forbidMonitor">
+        update t_ops_monitor
+        set IS_VALID = 0
+        where id = #{id}
+    </update>
+
+    <update id="unforbidMonitor">
+        update t_ops_monitor
+        set IS_VALID = 1
+        where id = #{id}
+    </update>
+
+    <update id="deleteMonitor">
+        update t_ops_monitor
+        set
+        DELETE_FLAG = ID,
+        DELETE_USER = #{deleteUser},
+        DELETE_USER_NAME = #{deleteUsername},
+        DELETE_TIME = #{deleteTime}
+        where id = #{id}
+    </update>
+
+    <select id="getMonitorTypeByMonitorId" resultMap="monitorTypeMaster">
+        select mtm.id,mtm.MONITOR_TYPE_NAME
+            from t_ops_monitor m
+            left join t_ops_monitor_detail_type mdt on mdt.MONITOR_ID = m.ID
+            left join t_ops_monitor_type_master mtm  on mdt.MONITOR_TYPE_ID = mtm.ID
+            where mdt.DELETE_FLAG = 0
+          and m.ID = #{id}
+        group by mtm.MONITOR_TYPE_NAME,mtm.ID
+    </select>
+
+    <select id="getByMonitorName" resultMap="monitor">
+        select *
+        , (select EQUIPMENT_CODE from t_ops_equipment e where e.id = EQUIPMENT_ID) as equipmentCode
+        from t_ops_monitor
+        where MONITOR_NAME = #{monitorName}
+        and DELETE_FLAG = 0
+    </select>
+</mapper>

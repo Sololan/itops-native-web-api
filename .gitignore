@@ -1,0 +1,7 @@
+.idea/
+*.iml
+logs/
+log/
+.flattened-pom.xml
+target/
+/web-api/src/test/

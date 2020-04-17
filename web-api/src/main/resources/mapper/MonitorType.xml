@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wejoyclass.itops.local.mapper.MonitorTypeMapper">
+
+    <resultMap id="monitorType" type="com.wejoyclass.itops.local.entity.MonitorType">
+    </resultMap>
+
+    <resultMap id="monitorCount" type="com.wejoyclass.itops.local.dto.MonitorCount">
+    </resultMap>
+
+    <select id="getMonitorTypeByEquipmentSubTypeId" resultMap="monitorType">
+        select *
+        from t_ops_monitor_type_master mtm inner join t_ops_equipment_monitor_type on MONITOR_TYPE_ID = mtm.ID
+        where EQUIPMENT_SUB_TYPE = #{id}
+    </select>
+
+    <select id="getMonitorTypeCount" resultMap="monitorCount">
+        select count(mdt.ID) as `COUNT`,mtm.MONITOR_TYPE_NAME
+        from t_ops_monitor_type_master mtm
+            left join t_ops_monitor_detail_type mdt on mdt.MONITOR_TYPE_ID = mtm.ID
+            left join t_ops_monitor m on m.ID = mdt.MONITOR_ID
+        where mdt.DELETE_FLAG = 0
+        and m.DELETE_FLAG = 0
+        and m.IS_VALID = 1
+        group by mtm.MONITOR_TYPE_NAME
+    </select>
+
+    <select id="getMonitorTypeCountById" resultMap="monitorCount">
+        select count(mdt.ID) as `COUNT`,mtm.MONITOR_TYPE_NAME
+        from t_ops_monitor_type_master mtm
+            left join t_ops_monitor_detail_type mdt on mdt.MONITOR_TYPE_ID = mtm.ID
+            left join t_ops_monitor m on m.ID = mdt.MONITOR_ID
+        where mdt.DELETE_FLAG = 0
+        and m.DELETE_FLAG = 0
+        and m.ID = #{id}
+        group by mtm.MONITOR_TYPE_NAME
+    </select>
+
+</mapper>

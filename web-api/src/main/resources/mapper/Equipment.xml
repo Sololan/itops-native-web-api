@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wejoyclass.itops.local.mapper.EquipmentMapper">
+
+    <resultMap id="Equipment" type="com.wejoyclass.itops.local.entity.Equipment">
+    </resultMap>
+
+    <select id="findEquipmentList" resultMap="Equipment">
+        select id, org_id, equipment_code, equipment_type, equipment_sub_type, brand, equipment_mode, service_number, purchase_date, expiration, supplier_id
+        , create_time, create_user_name, create_user
+        , (select SUPPLIER_NAME from t_ops_supplier s where s.id = SUPPLIER_ID) as supplierName
+        , (select di.NAME from t_base_dict_item di where di.id = EQUIPMENT_TYPE) as equipmentTypeName
+        , (select di.NAME from t_base_dict_item di where di.id = EQUIPMENT_SUB_TYPE) as equipmentSubTypeName
+        , (select di.ITEM_KEY from t_base_dict_item di where di.id = EQUIPMENT_SUB_TYPE) as equipmentSubTypeKey
+        , (select di.NAME from t_base_dict_item di where di.id = BRAND) as brandName
+        from t_ops_equipment
+        where DELETE_FLAG = 0
+        <if test="equipmentCode != null and equipmentCode != ''">
+            and EQUIPMENT_CODE like concat('%', #{equipmentCode}, '%')
+         </if>
+        <if test="equipmentType != null">
+            and EQUIPMENT_TYPE = #{equipmentType}
+        </if>
+        <if test="equipmentSubType != null">
+            and EQUIPMENT_SUB_TYPE = #{equipmentSubType}
+        </if>
+        <if test="brand != null">
+            and BRAND = #{brand}
+        </if>
+        <if test="fromPurchaseDate != null">
+            and PURCHASE_DATE >= #{fromPurchaseDate}
+        </if>
+        <if test="toPurchaseDate != null">
+            and #{toPurchaseDate} >= PURCHASE_DATE
+        </if>
+        <if test="supplierId != null">
+            and SUPPLIER_ID = #{supplierId}
+        </if>
+        <if test="orgId != null">
+            and ORG_ID = #{orgId}
+        </if>
+        order by EQUIPMENT_TYPE, EQUIPMENT_SUB_TYPE, PURCHASE_DATE, CREATE_TIME desc
+    </select>
+
+    <select id="getById" resultMap="Equipment">
+        select *
+        , (select SUPPLIER_NAME from t_ops_supplier s where s.id = SUPPLIER_ID) as supplierName
+        , (select di.NAME from t_base_dict_item di where di.id = EQUIPMENT_TYPE) as equipmentTypeName
+        , (select di.NAME from t_base_dict_item di where di.id = EQUIPMENT_SUB_TYPE) as equipmentSubTypeName
+        , (select di.ITEM_KEY from t_base_dict_item di where di.id = EQUIPMENT_SUB_TYPE) as equipmentSubTypeKey
+        , (select di.NAME from t_base_dict_item di where di.id = BRAND) as brandName
+        from t_ops_equipment
+        where id = #{id}
+        and DELETE_FLAG = 0
+    </select>
+
+</mapper>

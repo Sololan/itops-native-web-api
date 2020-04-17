@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wejoyclass.itops.local.mapper.MonitorSubMethodMapper">
+
+    <resultMap id="monitorSubMethod" type="com.wejoyclass.itops.local.entity.MonitorSubMethod">
+    </resultMap>
+
+    <select id="getMonitorSubMethodByMonitorTypeSubId" resultMap="monitorSubMethod">
+        select *
+        from t_ops_monitor_sub_method
+        where MONITOR_TYPE_SUB_ID = #{id}
+    </select>
+
+    <select id="findAll" resultMap="monitorSubMethod">
+        select * from t_ops_monitor_sub_method
+    </select>
+
+</mapper>

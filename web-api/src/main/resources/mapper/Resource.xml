@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wejoyclass.itops.local.mapper.ResourceMapper">
+    <resultMap id="map" type="com.wejoyclass.itops.local.entity.Resource">
+
+    </resultMap>
+
+    <select id="getAllResources" resultMap="map">
+        select * from t_base_resource
+    </select>
+
+    <select id="initResource">
+        INSERT INTO t_base_resource (ID, NAME, PID, TYPE, CODE, URI, PERMISSION, ENABLED, SORT, REMARKS, ICON, PROJECT_NO, CREATE_TIME, CREATE_USER_NAME, CREATE_USER, UPDATE_TIME, UPDATE_USER_NAME, UPDATE_USER, DELETE_TIME, DELETE_USER_NAME, DELETE_USER, DELETE_FLAG)
+        VALUES
+        (1, '首页', -1, '1', 'home', '/main/home', null, 1, 1, null, 'itopsfont itops-home', 'uc', null, null, null, null, null, null, null, null, null, 0),
+        (2, '告警查看', -1, '1', 'warning', '/main/warning', null, 1, 2, null, 'itopsfont itops-alarm', null, null, null, null, null, null, null, null, null, null, 0),
+        (3, '监控管理', -1, '1', 'monitor', '/main/monitor', null, 1, 3, null, 'itopsfont itops-monitor', null, null, null, null, null, null, null, null, null, null, 0),
+        (4, '授权管理', -1, '1', 'auth', '/main/auth', null, 1, 6, null, 'itopsfont itops-auth', null, null, null, null, null, null, null, null, null, null, 0),
+        (5, '报表统计', -1, '1', 'chart', '', null, 1, 4, null, 'itopsfont itops-statistics', null, null, null, null, null, null, null, null, null, null, 0),
+        (6, '系统设置', -1, '1', 'setting', null, null, 1, 5, null, 'itopsfont itops-set-up', null, null, null, null, null, null, null, null, null, null, 0),
+        (7, '个人信息', -1, '1', 'info', '/main/info', null, 1, 7, null, 'itopsfont itops-user', null, null, null, null, null, null, null, null, null, null, 0),
+        (8, '告警数量统计', 5, '1', 'quantity', '/main/statistics/quantity', null, 1, 1, null, 'itopsfont itops-frequency', null, null, null, null, null, null, null, null, null, null, 0),
+        (9, '告警频率统计', 5, '1', 'rate', '/main/statistics/rate', null, 1, 2, null, 'itopsfont itops-frequency', null, null, null, null, null, null, null, null, null, null, 0),
+        (10, '用户管理', 6, '1', 'user', '/main/setting/user', null, 1, 1, null, 'itopsfont itops-user', null, null, null, null, null, null, null, null, null, null, 0),
+        (11, '设备管理', 6, '1', 'equipment', '/main/setting/equipment', null, 1, 2, null, 'itopsfont itops-equipment', null, null, null, null, null, null, null, null, null, null, 0),
+        (12, '供应商管理', 6, '1', 'supplier', '/main/setting/supplier', '', 1, 3, null, 'itopsfont itops-supplier', null, null, null, null, null, null, null, null, null, null, 0),
+        (13, '字典管理', 6, '1', 'dict', '/main/setting/dict', '', 1, 8, null, 'itopsfont itops-dict', null, null, null, null, null, null, null, null, null, null, 0)
+    </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <select id="initResourceRoles">
+        insert into t_base_role_resource (ROLE_ID, RESOURCE_ID) value (#{roleId},#{resourceId})
+    </select>
+
+    <update id="truncateTable">
+        TRUNCATE table t_ops_monitor_license
+    </update>
+
+</mapper>

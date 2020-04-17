@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wejoyclass.itops.local.mapper.MonitorLicenseMapper">
+    <resultMap id="map" type="com.wejoyclass.itops.local.dto.MonitorLicenseDto">
+
+    </resultMap>
+
+    <resultMap id="entity" type="com.wejoyclass.itops.local.entity.MonitorLicense">
+
+    </resultMap>
+
+    <select id="findMonitorLincenseList" parameterType="map" resultMap="map">
+        select *
+        from t_ops_monitor_license
+        where 1 = 1
+        <if test="startTime != null and startTime != ''">
+            and DATE_FORMAT(START_DATE,'%Y-%m-%d') >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and  #{endTime} >= DATE_FORMAT(START_DATE,'%Y-%m-%d')
+        </if>
+        <if test="endStartTime != null and endStartTime != ''">
+            and DATE_FORMAT(END_DATE,'%Y-%m-%d') >= #{endStartTime}
+        </if>
+        <if test="endEndTime != null and endEndTime != ''">
+            and #{endEndTime} >= DATE_FORMAT(END_DATE,'%Y-%m-%d')
+        </if>
+
+        <if test="status != null and status != ''">
+            <if test="status == false">
+                and now() > EXPIRE_TIME
+            </if>
+            <if test="status == true">
+                and EXPIRE_TIME > now()
+            </if>
+        </if>
+        <if test="orgId != null and orgId != ''">
+            and ORG_ID = #{orgId}
+        </if>
+        order by EXPIRE_TIME desc
+    </select>
+
+    <select id="findActiveEntity" resultMap="entity">
+        select * from t_ops_monitor_license where EXPIRE_TIME >= NOW() order by EXPIRE_TIME limit 1
+    </select>
+
+    <update id="updateMonitorCount">
+        update t_ops_monitor_license
+        set ID = ID
+        <if test="usedHardwareQuantity != null">
+            ,USED_HARDWARE_QUANTITY = #{usedHardwareQuantity}
+        </if>
+        <if test="usedOsQuantity != null">
+            ,USED_OS_QUANTITY = #{usedOsQuantity}
+        </if>
+        <if test="usedDbQuantity != null">
+            ,USED_DB_QUANTITY = #{usedDbQuantity}
+        </if>
+        <if test="usedMiddlewareQuantity != null">
+            ,USED_MIDDLEWARE_QUANTITY = #{usedMiddlewareQuantity}
+        </if>
+        <if test="usedWebQuantity != null">
+            ,USED_WEB_QUANTITY = #{usedWebQuantity}
+        </if>
+        where id = #{id}
+    </update>
+
+</mapper>

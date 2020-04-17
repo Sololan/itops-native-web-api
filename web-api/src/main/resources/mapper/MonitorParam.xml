@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wejoyclass.itops.local.mapper.MonitorParamMapper">
+
+    <resultMap id="monitorParamDto" type="com.wejoyclass.itops.local.dto.MonitorParamDto">
+        <id property="id" column="id"></id>
+    </resultMap>
+
+    <select id="getMonitorParamDtoById" resultMap="monitorParamDto">
+        select ID,PARAM_ID,PARAM_VALUE
+        from t_ops_monitor_param
+        where DELETE_FLAG = 0
+        and EQUIPMENT_MONITOR_TYPE = #{id}
+    </select>
+
+    <insert id="saveMonitorParam">
+        insert into t_ops_monitor_param
+        (ORG_ID, MONITOR_ID, EQUIPMENT_MONITOR_TYPE, PARAM_ID, PARAM_VALUE, CREATE_TIME, CREATE_USER_NAME, CREATE_USER)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.orgId},
+            #{item.monitorId},
+            #{item.equipmentMonitorType},
+            #{item.paramId},
+            #{item.paramValue},
+            #{item.createTime},
+            #{item.createUsername},
+            #{item.createUser}
+            )
+        </foreach>
+    </insert>
+
+    <update id="deleteByMonitorDetailTypeId">
+        update t_ops_monitor_param
+        set
+        DELETE_FLAG = id,
+        DELETE_TIME = now(),
+        DELETE_USER_NAME = #{username},
+        DELETE_USER = #{userId}
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            EQUIPMENT_MONITOR_TYPE = #{item}
+        </foreach>
+    </update>
+
+    <update id="updateMonitorParam">
+        update t_ops_monitor_param
+        set
+        PARAM_VALUE = #{paramValue}
+        where
+        id = #{id}
+    </update>
+
+    <update id="delelteByMonitorId">
+        update t_ops_monitor_param
+        set DELETE_FLAG = id
+        where
+        MONITOR_ID = #{id}
+    </update>
+</mapper>

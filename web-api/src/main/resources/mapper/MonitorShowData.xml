@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wejoyclass.itops.local.mapper.MonitorShowDataMapper">
+
+    <resultMap id="monitorShowData" type="com.wejoyclass.itops.local.entity.MonitorShowData">
+    </resultMap>
+
+    <update id="delelteByMonitorId">
+        update t_ops_monitor_show_setting
+        set DELETE_FLAG = id
+        where
+        MONITOR_ID = #{id}
+    </update>
+
+    <select id="getMonitorShowDateBySettingId" resultMap="monitorShowData">
+        select *
+        from t_ops_monitor_show_data
+        where DELETE_FLAG = 0
+        and MONITOR_SHOW_SETTING_ID = #{id}
+    </select>
+
+    <insert id="saveMonitorShowData">
+        insert into t_ops_monitor_show_data
+        (MONITOR_SHOW_SETTING_ID, DATA_ITEM_NAME, DATA_SOURCE_KEY, SORT_NUM, CREATE_TIME, CREATE_USER_NAME, CREATE_USER, MONITOR_ID)
+        values
+        <foreach collection="monitorShowDataList" item="item" index="index" separator=",">
+            (
+            #{id},
+            #{item.dataItemName},
+            #{item.dataSourceKey},
+            1,
+            #{createTime},
+            #{createUsername},
+            #{createUser},
+            #{monitorId}
+            )
+        </foreach>
+    </insert>
+
+    <update id="deleteByShowSettingId">
+        update t_ops_monitor_show_data
+        set
+        DELETE_FLAG = ID
+        where
+        MONITOR_SHOW_SETTING_ID = #{id}
+    </update>
+
+    <update id="updateMonitorId">
+        update t_ops_monitor_show_data
+        set MONITOR_ID = #{newId}
+        where DELETE_FLAG = 0
+        and MONITOR_ID = #{oldId}
+    </update>
+
+</mapper>

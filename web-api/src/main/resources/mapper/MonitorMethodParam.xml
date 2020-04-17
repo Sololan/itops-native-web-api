@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wejoyclass.itops.local.mapper.MonitorMethodParamMapper">
+
+    <resultMap id="monitorMethodParam" type="com.wejoyclass.itops.local.entity.MonitorMethodParam">
+    </resultMap>
+
+    <select id="getMonitorMethodParamByMonitorSubMethodId" resultMap="monitorMethodParam">
+        select *
+        from t_ops_monitor_method_param
+        where MONITOR_METHOD_ID = #{id}
+    </select>
+
+</mapper>

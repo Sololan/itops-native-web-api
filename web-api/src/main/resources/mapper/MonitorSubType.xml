@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wejoyclass.itops.local.mapper.MonitorSubTypeMapper">
+
+    <resultMap id="monitorSubType" type="com.wejoyclass.itops.local.entity.MonitorSubType">
+    </resultMap>
+
+    <select id="getMonitorTypeSubByMonitorTypeId" resultMap="monitorSubType">
+        select *
+        from t_ops_monitor_type_sub
+        where EQUIPMENT_SUB_TYPE = #{equipmentSubTypeId}
+        and MONITOR_TYPE_ID = #{monitorTypeId}
+    </select>
+
+</mapper>
